@@ -6,7 +6,7 @@
 |---|---|---:|---|
 | Paper YOLOv10-N | COCO val2017 full | 38.5% | Official paper number |
 | A Official `.pt` (ours) | coco8.yaml | 67.92% | No train; device=cpu |
-| B Fine-tune until convergence (ours) | coco8.yaml | 64.03% | ran=42, best≈22; patience=30; device=cpu |
+| B Fine-tune until convergence (ours) | coco8.yaml | 64.81% | ran=100, best≈22; patience=0; device=cpu |
 
 ## Interpretation
 

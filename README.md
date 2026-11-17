@@ -20,7 +20,7 @@ Two assignment-allowed paths:
 - Model: `yolov10n.pt` (nano)
 - Dataset: Ultralytics **coco8** (8 images) — small-data substitute for full COCO
 - Image size: 640
-- Path B: **max 200 epochs**, `patience=30` early-stopping（验证指标不再提升就停）
+- Path B: **固定 100 epochs**（`patience=0`，跑满不停）
 - Device in this run: **CPU** (RTX 5060 present, but current PyTorch build is CPU-only)
 
 ## Setup

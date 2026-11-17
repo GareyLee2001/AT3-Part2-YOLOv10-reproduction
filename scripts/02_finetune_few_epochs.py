@@ -25,8 +25,8 @@ FIG.mkdir(parents=True, exist_ok=True)
 MODEL_NAME = "yolov10n.pt"
 DATA = "coco8.yaml"
 IMGSZ = 640
-MAX_EPOCHS = 200  # upper bound; training stops earlier when converged
-PATIENCE = 30  # stop if val fitness has no improvement for this many epochs
+MAX_EPOCHS = 100  # fixed run length requested by user
+PATIENCE = 0  # 0 = disable early-stopping; run all 100 epochs
 BATCH = 4
 DEVICE = "cpu"
 
@@ -164,8 +164,8 @@ def main() -> None:
             "postprocess": float(metrics.speed.get("postprocess", 0.0)),
         },
         "note": (
-            "Train until early-stopping: stop when val fitness does not improve "
-            f"for {PATIENCE} epochs (max {MAX_EPOCHS}). Tiny coco8 protocol, not full COCO."
+            f"Fixed {MAX_EPOCHS}-epoch fine-tune on tiny coco8 "
+            f"(patience={PATIENCE}; 0 means no early-stop). Not full COCO."
         ),
         "train_save_dir": str(getattr(train_results, "save_dir", OUT / "train")),
     }

@@ -25,8 +25,8 @@ FIG.mkdir(parents=True, exist_ok=True)
 MODEL_NAME = "yolov10n.pt"
 DATA = "coco8.yaml"
 IMGSZ = 640
-MAX_EPOCHS = 100  # fixed run length requested by user
-PATIENCE = 0  # 0 = disable early-stopping; run all 100 epochs
+MAX_EPOCHS = 200  # fixed run length requested by user
+PATIENCE = 0  # 0 = disable early-stopping; run all 200 epochs
 BATCH = 4
 DEVICE = "cpu"
 
@@ -165,7 +165,7 @@ def main() -> None:
         },
         "note": (
             f"Fixed {MAX_EPOCHS}-epoch fine-tune on tiny coco8 "
-            f"(patience={PATIENCE}; 0 means no early-stop). Not full COCO."
+            f"(patience={PATIENCE}; 0 means no early-stop). Not full COCO training."
         ),
         "train_save_dir": str(getattr(train_results, "save_dir", OUT / "train")),
     }

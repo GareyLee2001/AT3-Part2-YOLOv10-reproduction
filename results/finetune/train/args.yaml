@@ -2,7 +2,7 @@ task: detect
 mode: train
 model: yolov10n.pt
 data: coco8.yaml
-epochs: 100
+epochs: 200
 time: null
 patience: 0
 batch: 4

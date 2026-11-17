@@ -25,27 +25,31 @@
     "note": "Official checkpoint only. No fine-tuning. Fixed subset = coco8 val."
   },
   "path_B": {
-    "path": "B_finetune_few_epochs",
+    "path": "B_finetune_until_convergence",
     "base_model": "yolov10n.pt",
     "finetuned_checkpoint": "results\\finetune\\train\\weights\\best.pt",
     "data": "coco8.yaml",
     "imgsz": 640,
-    "epochs": 5,
+    "max_epochs": 200,
+    "patience": 30,
+    "epochs_ran": 42,
+    "best_epoch": 22,
+    "best_map50_95_during_train": 0.64033,
     "batch": 4,
     "device": "cpu",
-    "map50_95": 0.5946721981622111,
-    "map50": 0.8603253504130697,
-    "map75": 0.6737656014164636,
-    "precision": 0.6509628432396544,
-    "recall": 0.8666666666666667,
-    "train_seconds": 12.286,
-    "val_seconds": 1.542,
+    "map50_95": 0.6403004157665477,
+    "map50": 0.847863247863248,
+    "map75": 0.703731884057971,
+    "precision": 0.8281827691813254,
+    "recall": 0.7333333333333334,
+    "train_seconds": 60.507,
+    "val_seconds": 1.573,
     "speed_ms_per_image": {
-      "preprocess": 0.8585249888710678,
-      "inference": 19.415924994973466,
-      "postprocess": 0.04972500028088689
+      "preprocess": 0.8143500017467886,
+      "inference": 23.41434999834746,
+      "postprocess": 0.4940750077366829
     },
-    "note": "Simplified reproduction: tiny coco8 + 5 epochs. Not full COCO training.",
+    "note": "Train until early-stopping: stop when val fitness does not improve for 30 epochs (max 200). Tiny coco8 protocol, not full COCO.",
     "train_save_dir": "C:\\Users\\联想\\Desktop\\AT3-Part2-YOLOv10-reproduction-李嘉烯-D26092110161\\results\\finetune\\train"
   }
 }

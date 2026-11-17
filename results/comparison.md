@@ -6,7 +6,7 @@
 |---|---|---:|---|
 | Paper YOLOv10-N | COCO val2017 full | 38.5% | Official paper number |
 | A Official `.pt` (ours) | coco8.yaml | 67.92% | No train; device=cpu |
-| B Few-epoch fine-tune (ours) | coco8.yaml | 59.47% | epochs=5; device=cpu |
+| B Few-epoch fine-tune (ours) | coco8.yaml | 64.03% | epochs=None; device=cpu |
 
 ## Interpretation
 

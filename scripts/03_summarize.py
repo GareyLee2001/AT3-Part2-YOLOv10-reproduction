@@ -48,9 +48,11 @@ def main() -> None:
             f"No train; device={a.get('device')} |"
         )
     if b:
+        ep = b.get("epochs_ran", b.get("epochs"))
+        best_ep = b.get("best_epoch")
         lines.append(
-            f"| B Few-epoch fine-tune (ours) | {b.get('data')} | {100 * float(b.get('map50_95', float('nan'))):.2f}% | "
-            f"epochs={b.get('epochs')}; device={b.get('device')} |"
+            f"| B Fine-tune until convergence (ours) | {b.get('data')} | {100 * float(b.get('map50_95', float('nan'))):.2f}% | "
+            f"ran={ep}, best≈{best_ep}; patience={b.get('patience')}; device={b.get('device')} |"
         )
     lines += [
         "",

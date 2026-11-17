@@ -12,7 +12,7 @@ Two assignment-allowed paths:
 | Path | What | Command |
 |------|------|---------|
 | **A** | Official `.pt` → inference + fixed-subset eval | `python scripts/01_official_pt_eval.py` |
-| **B** | Small data + few-epoch fine-tune | `python scripts/02_finetune_few_epochs.py` |
+| **B** | Small data + train until convergence (early stop) | `python scripts/02_finetune_few_epochs.py` |
 | Summary | Merge metrics + paper comparison | `python scripts/03_summarize.py` |
 
 ### Fixed simplified protocol
@@ -20,7 +20,7 @@ Two assignment-allowed paths:
 - Model: `yolov10n.pt` (nano)
 - Dataset: Ultralytics **coco8** (8 images) — small-data substitute for full COCO
 - Image size: 640
-- Path B epochs: **5**
+- Path B: **max 200 epochs**, `patience=30` early-stopping（验证指标不再提升就停）
 - Device in this run: **CPU** (RTX 5060 present, but current PyTorch build is CPU-only)
 
 ## Setup

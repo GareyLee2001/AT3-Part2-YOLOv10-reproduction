@@ -1,4 +1,4 @@
-# AT3② Technical Reproduction — YOLOv10n
+﻿# AT3② Technical Reproduction — YOLOv10n
 
 **Course:** DDS001 数据科学前沿分析研究  
 **Student:** 李嘉烯　`D26092110161`  
@@ -20,7 +20,7 @@ Two assignment-allowed paths:
 - Model: `yolov10n.pt` (nano)
 - Dataset: Ultralytics **coco8** (8 images) — small-data substitute for full COCO
 - Image size: 640
-- Path B: **固定 100 epochs**（`patience=0`，跑满不停）
+- Path B: **固定 200 epochs**（`patience=0`，跑满 200 轮不停）
 - Device in this run: **CPU** (RTX 5060 present, but current PyTorch build is CPU-only)
 
 ## Setup
@@ -74,3 +74,4 @@ Scoring asks for **result fidelity vs the paper**, not multi-model bake-offs.
 ## License / attribution
 
 YOLOv10 weights/code via Ultralytics. Paper: Wang et al., NeurIPS 2024.
+

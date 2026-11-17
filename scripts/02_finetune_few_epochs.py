@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-AT3② Path B: small-data fine-tune of YOLOv10n until validation converges.
-Protocol: coco8, imgsz=640, max_epochs high + early-stopping patience.
+AT3② Path B: small-data fine-tune of YOLOv10n on coco128.
+Protocol: coco128, imgsz=640, fixed 100 epochs (manageable on CPU).
 """
 from __future__ import annotations
 
@@ -23,19 +23,21 @@ OUT.mkdir(parents=True, exist_ok=True)
 FIG.mkdir(parents=True, exist_ok=True)
 
 MODEL_NAME = "yolov10n.pt"
-DATA = "coco8.yaml"
+DATA = "coco128.yaml"  # common small set (~128 images), more than coco8
 IMGSZ = 640
-MAX_EPOCHS = 200  # fixed run length requested by user
-PATIENCE = 0  # 0 = disable early-stopping; run all 200 epochs
-BATCH = 4
+MAX_EPOCHS = 100
+PATIENCE = 0  # run all 100 epochs
+BATCH = 8
 DEVICE = "cpu"
 
 
-def find_coco8_images() -> Path | None:
+def find_demo_images() -> Path | None:
     datasets_dir = Path(SETTINGS.get("datasets_dir", Path.home() / "datasets"))
     for p in [
-        datasets_dir / "coco8" / "images" / "val",
-        datasets_dir / "coco8" / "images" / "train",
+        datasets_dir / "coco128" / "images" / "train2017",
+        datasets_dir / "coco128" / "images" / "val2017",
+        datasets_dir / "coco128" / "images" / "train",
+        datasets_dir / "coco128" / "images" / "val",
     ]:
         if p.exists():
             return p
@@ -48,7 +50,6 @@ def read_train_curve(results_csv: Path) -> dict:
     rows = list(csv.DictReader(results_csv.open(encoding="utf-8")))
     if not rows:
         return {"epochs_ran": 0, "best_epoch": None, "best_map50_95": None}
-    # Ultralytics column names vary slightly by version
     map_key = next(
         (k for k in rows[0].keys() if "mAP50-95" in k or k.strip().endswith("mAP50-95(B)")),
         None,
@@ -66,7 +67,6 @@ def read_train_curve(results_csv: Path) -> dict:
         if v >= best_v:
             best_v = v
             best_i = i
-    best_epoch = None
     try:
         best_epoch = int(float(rows[best_i][epoch_key]))
     except Exception:
@@ -81,8 +81,8 @@ def read_train_curve(results_csv: Path) -> dict:
 
 def main() -> None:
     print(
-        f"[B] Fine-tune {MODEL_NAME} on {DATA} until convergence "
-        f"(max_epochs={MAX_EPOCHS}, patience={PATIENCE})"
+        f"[B] Fine-tune {MODEL_NAME} on {DATA} for {MAX_EPOCHS} epochs "
+        f"(batch={BATCH}, patience={PATIENCE})"
     )
     model = YOLO(MODEL_NAME)
 
@@ -108,7 +108,7 @@ def main() -> None:
     ckpt = best if best.exists() else last
     curve = read_train_curve(OUT / "train" / "results.csv")
     print(f"[B] Load fine-tuned checkpoint: {ckpt}")
-    print(f"[B] Convergence: epochs_ran={curve['epochs_ran']}, best_epoch={curve['best_epoch']}")
+    print(f"[B] Curve: epochs_ran={curve['epochs_ran']}, best_epoch={curve['best_epoch']}")
     ft = YOLO(str(ckpt))
 
     t1 = time.perf_counter()
@@ -125,10 +125,11 @@ def main() -> None:
     )
     val_sec = time.perf_counter() - t1
 
-    img_dir = find_coco8_images()
+    img_dir = find_demo_images()
     if img_dir is not None:
+        imgs = sorted([p for p in img_dir.iterdir() if p.suffix.lower() in {".jpg", ".jpeg", ".png"}])[:8]
         ft.predict(
-            source=str(img_dir),
+            source=[str(p) for p in imgs] if imgs else str(img_dir),
             imgsz=IMGSZ,
             device=DEVICE,
             save=True,
@@ -139,7 +140,7 @@ def main() -> None:
 
     box = metrics.box
     summary = {
-        "path": "B_finetune_until_convergence",
+        "path": "B_finetune_coco128",
         "base_model": MODEL_NAME,
         "finetuned_checkpoint": str(ckpt.relative_to(ROOT)) if ckpt.exists() else None,
         "data": DATA,
@@ -164,8 +165,8 @@ def main() -> None:
             "postprocess": float(metrics.speed.get("postprocess", 0.0)),
         },
         "note": (
-            f"Fixed {MAX_EPOCHS}-epoch fine-tune on tiny coco8 "
-            f"(patience={PATIENCE}; 0 means no early-stop). Not full COCO training."
+            f"Fixed {MAX_EPOCHS}-epoch fine-tune on coco128 "
+            "(common Ultralytics small COCO subset; more than coco8, still not full COCO)."
         ),
         "train_save_dir": str(getattr(train_results, "save_dir", OUT / "train")),
     }

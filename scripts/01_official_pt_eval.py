@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 AT3② Path A: official YOLOv10n .pt -> fixed-subset evaluation + inference demo.
-Protocol: coco8 (8 images), imgsz=640, no training.
+Protocol: coco128 (128 images; common Ultralytics demo set), imgsz=640, no training.
 """
 from __future__ import annotations
 
@@ -22,17 +22,19 @@ OUT.mkdir(parents=True, exist_ok=True)
 FIG.mkdir(parents=True, exist_ok=True)
 
 MODEL_NAME = "yolov10n.pt"
-DATA = "coco8.yaml"
+DATA = "coco128.yaml"  # more commonly used than coco8; still small
 IMGSZ = 640
 DEVICE = "cpu"
 
 
-def find_coco8_images() -> Path | None:
+def find_demo_images() -> Path | None:
     datasets_dir = Path(SETTINGS.get("datasets_dir", Path.home() / "datasets"))
     candidates = [
-        datasets_dir / "coco8" / "images" / "val",
-        datasets_dir / "coco8" / "images" / "train",
-        ROOT / "datasets" / "coco8" / "images" / "val",
+        datasets_dir / "coco128" / "images" / "train2017",
+        datasets_dir / "coco128" / "images" / "val2017",
+        datasets_dir / "coco128" / "images" / "train",
+        datasets_dir / "coco128" / "images" / "val",
+        ROOT / "datasets" / "coco128" / "images" / "train2017",
     ]
     for p in candidates:
         if p.exists():
@@ -59,11 +61,13 @@ def main() -> None:
     )
     val_sec = time.perf_counter() - t0
 
-    img_dir = find_coco8_images()
+    img_dir = find_demo_images()
     if img_dir is not None:
-        print(f"[A] Inference demo: {img_dir}")
+        # only a few images for screenshot deliverable
+        imgs = sorted([p for p in img_dir.iterdir() if p.suffix.lower() in {".jpg", ".jpeg", ".png"}])[:8]
+        print(f"[A] Inference demo: {len(imgs)} images from {img_dir}")
         model.predict(
-            source=str(img_dir),
+            source=[str(p) for p in imgs] if imgs else str(img_dir),
             imgsz=IMGSZ,
             device=DEVICE,
             save=True,
@@ -72,7 +76,7 @@ def main() -> None:
             exist_ok=True,
         )
     else:
-        print("[A] WARN: coco8 images folder not found for predict demo")
+        print("[A] WARN: coco128 images folder not found for predict demo")
 
     box = metrics.box
     summary = {
@@ -92,7 +96,7 @@ def main() -> None:
             "inference": float(metrics.speed.get("inference", 0.0)),
             "postprocess": float(metrics.speed.get("postprocess", 0.0)),
         },
-        "note": "Official checkpoint only. No fine-tuning. Fixed subset = coco8 val.",
+        "note": "Official checkpoint only. No fine-tuning. Fixed subset = coco128 (common small COCO subset).",
     }
     out_json = OUT / "metrics.json"
     out_json.write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")

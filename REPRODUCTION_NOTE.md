@@ -2,35 +2,30 @@
 
 **学生：** 李嘉烯（D26092110161）  
 **论文：** YOLOv10 (NeurIPS 2024)  
-**实现：** Ultralytics `yolov10n.pt`
+**实现：** Ultralytics `yolov10n.pt`  
+**数据：** **coco128**（常用小集，约 128 张；比 coco8 更有代表性，又远小于全量 COCO）
 
 ## 1. 复现了什么
 
-按作业「可使用简化版：小型数据集、少 epoch」，完成两条路径：
-
-1. **Path A（首选）**：直接使用官方预训练权重，在固定小集 `coco8` 上做验证与推理可视化。  
-2. **Path B（加分路径）**：在同一小集上微调，**固定跑满 200 epoch**（关闭早停）。
-
-两条路径共享固定协议：模型 `yolov10n`、输入 640、数据 `coco8`、设备 CPU（本机有 RTX 5060，但当前 PyTorch 为 CPU 构建）。
+1. **Path A：** 官方预训练权重，在 coco128 上评测 + 推理可视化（不训练）  
+2. **Path B：** 同数据上微调 **100 epoch**（batch=8，关闭早停，跑满）
 
 ## 2. 结果摘要
 
 | 设置 | 数据 | mAP50-95 | 说明 |
 |------|------|----------|------|
 | 论文 YOLOv10-N | COCO val2017 全量 | **38.5%** | 论文报告值 |
-| A 官方 `.pt` | coco8 val | **67.92%** | 未训练；小集协议检查 |
-| B 200-epoch 微调 | coco8 | **64.03%** | 跑满 200 轮；训练曲线最佳约第 22 epoch |
+| A 官方 `.pt` | coco128 | **45.71%** | 未训练 |
+| B 100-epoch 微调 | coco128 | **75.73%** | 最佳约第 83 epoch |
 
-> 注意：coco8 只有 8 张图，mAP **不能**直接与论文全量 COCO 数字比高低；这里是「与原论文对比」时说明**差距原因**，满足评分中的复现度解释。
+## 3. 与原论文的差距 / 注意点
 
-## 3. 与原论文的差距原因
+1. coco128 ≠ 全量 COCO val2017  
+2. 本机 CPU ≠ 论文 GPU 延迟协议  
+3. Path B 在同一小集上训练与验证，mAP 会偏高（过拟合风险），**不能**据此声称超过论文 SOTA  
+4. 目标是作业允许的「小型数据集 + 少/有限 epoch」可重跑复现
 
-1. 数据规模：coco8 ≪ COCO val2017  
-2. 硬件：CPU vs 论文 GPU 端到端测速  
-3. Path B：虽已早停收敛，但样本极少，小集 mAP 仍会波动（本跑中 A 略高于 B，属正常）  
-4. 未声称复现论文 SOTA；目标是**可运行、可重跑、可解释**
-
-## 4. 如何重跑
+## 4. 重跑
 
 ```bash
 pip install -r requirements.txt
@@ -40,16 +35,4 @@ python scripts/02_finetune_few_epochs.py
 python scripts/03_summarize.py
 ```
 
-关键产物：
-
-- `results/official_pt/metrics.json`
-- `results/finetune/metrics.json`
-- `results/comparison.md`
-- `results/figures/`（检测框与曲线图）
-
-## 5. 结论
-
-- Path A 证明官方权重可直接用于推理/评测交付。  
-- Path B 证明作业允许的「小数据 + 少 epoch」微调路径可完整跑通并产出权重与曲线。  
-- 下一步若加分：换 CUDA 版 PyTorch，或扩大到 COCO128 / 更大子集再报 mAP。
-
+GitHub：https://github.com/GareyLee2001/AT3-Part2-YOLOv10-reproduction

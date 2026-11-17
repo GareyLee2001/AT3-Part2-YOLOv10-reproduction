@@ -58,8 +58,8 @@ def main() -> None:
         "",
         "## Interpretation",
         "",
-        "- Path A/B use **coco8** (8 images), so mAP is a **protocol check**, not a claim to match full-COCO paper mAP.",
-        "- Gap vs paper is expected: tiny subset + CPU + simplified setting.",
+        "- Path A/B use **coco128** (~128 images), a common Ultralytics small subset — still not full COCO.",
+        "- Gap vs paper is expected: subset + CPU + simplified setting.",
         "- Path B shows the assignment-allowed *small data + few epoch* fine-tune path is runnable.",
         "",
     ]
